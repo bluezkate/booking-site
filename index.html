@@ -85,7 +85,8 @@
   <div class="notice">
     <h2 class="notice__title">Ваше объявление</h2>
 
-    <form class="notice__form notice__form--disabled" action="https://js.dump.academy/keksobooking/data" method="post" enctype="multipart/form-data" autocomplete="off">
+    <form class="notice__form notice__form--disabled" maction="https://js.dump.academy/keksobooking" method="post" enctype="multipart/form-data"
+    autocomplete="off">
       <fieldset class="notice__header">
         <legend>Ваша фотография (для карты)</legend>
         <div class="notice__photo">
@@ -107,7 +108,7 @@
 
       <fieldset class="form__element form__element--wide">
         <label for="address">Адрес</label>
-        <input id="address" name="address" type="text" disabled>
+        <input id="address" name="address" type="text" readonly="readonly">
       </fieldset>
 
       <fieldset class="form__element">
@@ -155,10 +156,7 @@
           <option value="0">не для гостей</option>
           <option value="1">для 1 гостя</option>
           <option value="2">для 2 гостей</option>
-          <option value="3" selected>для 3 гостей</option>
-          
-          
-          
+          <option value="3" selected>для 3 гостей</option>  
         </select>
       </fieldset>
 
@@ -177,8 +175,8 @@
         <input type="checkbox" name="features" value="washer" id="feature-washer">
         <label class="feature feature--washer" for="feature-washer">Стиральная машина</label>
 
-        <input type="checkbox" name="features" value="elevator" id="feature-washer">
-        <label class="feature feature--elevator" for="feature-washer">Лифт</label>
+        <input type="checkbox" name="features" value="elevator" id="feature-elevator">
+        <label class="feature feature--elevator" for="feature-elevator">Лифт</label>
 
         <input type="checkbox" name="features" value="conditioner" id="feature-conditioner">
         <label class="feature feature--conditioner" for="feature-conditioner">Кондиционер</label>
@@ -245,7 +243,7 @@
     </ul>
   </article>
 
-  <button style="left: 200px; top: 400px;" class="map__pin"><img src="img/avatars/user07.png" width="40" height="40" draggable="false"></button>
+  <button style="left: 200px; top: 400px;" id="mapPin" class="map__pin map__pin-template"><img src="img/avatars/user07.png" width="40" height="40" draggable="false"></button>
 </template>
 
 <script src="js/main.js"></script>
