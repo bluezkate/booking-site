@@ -1,22 +1,27 @@
 // 'use strict';
-const   pinMain = document.querySelector('.map__pin--main'),
-            map = document.querySelector('.map'),
-            noticeForm = document.querySelector('.notice__form'),
-            address = document.getElementById('address');
-            const pins = document.querySelectorAll('#mapPin');
-            const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-            const picChooserr = document.querySelector('.notice__photo input[type=file]');
-            const picPreview = document.querySelector('.notice__photo img');
-    const picContainer = document.querySelector('.form__photo-container');
-    const picChooser = document.querySelector('.form__photo-container input[type=file]');
-    const   type = document.getElementById('type'),
-            price = document.getElementById('price');
-            const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
-            formSubmit = document.querySelector('.form__submit');
-
+// const   pinMain = document.querySelector('.map__pin--main'),
+//             map = document.querySelector('.map'),
+//             noticeForm = document.querySelector('.notice__form'),
+//             address = document.getElementById('address');
+            // const pins = document.querySelectorAll('#mapPin');
+            // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+            // const picChooserr = document.querySelector('.notice__photo input[type=file]');
+            // const picPreview = document.querySelector('.notice__photo img');
+    // const picContainer = document.querySelector('.form__photo-container');
+    // const picChooser = document.querySelector('.form__photo-container input[type=file]');
+    // const   type = document.getElementById('type'),
+    //         price = document.getElementById('price');
+            // const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
+            // formSubmit = document.querySelector('.form__submit');
+            
 
 // Перемещение метки по карте + установление значения адреса
 (function () {
+
+    const   pinMain = document.querySelector('.map__pin--main'),
+            map = document.querySelector('.map'),
+            noticeForm = document.querySelector('.notice__form'),
+            address = document.getElementById('address');
 
     address.value = `${pinMain.offsetLeft}, ${pinMain.offsetTop}`;
 
@@ -47,8 +52,6 @@ const   pinMain = document.querySelector('.map__pin--main'),
             }
 
             // Активируем карту и форму отправки
-            // const pins = document.querySelectorAll('.map__pin-template');
-            
             if (map.classList.contains('map--faded') &&  noticeForm.classList.contains('notice__form--disabled')) {
                 map.classList.remove('map--faded');
                 noticeForm.classList.remove('notice__form--disabled');
@@ -77,9 +80,9 @@ const   pinMain = document.querySelector('.map__pin--main'),
 
 // Отображение аватарки
 (function (){
-    // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-    // const picChooserr = document.querySelector('.notice__photo input[type=file]');
-    // const picPreview = document.querySelector('.notice__photo img');
+    const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+    const picChooserr = document.querySelector('.notice__photo input[type=file]');
+    const picPreview = document.querySelector('.notice__photo img');
 
     picChooserr.addEventListener('change', function(){
         let file = picChooserr.files[0];
@@ -104,9 +107,9 @@ const   pinMain = document.querySelector('.map__pin--main'),
 
 // Отображение фотографий жилья
 (function (){
-    // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-    // const picContainer = document.querySelector('.form__photo-container');
-    // const picChooser = document.querySelector('.form__photo-container input[type=file]');
+    const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+    const picContainer = document.querySelector('.form__photo-container');
+    const picChooser = document.querySelector('.form__photo-container input[type=file]');
 
     picChooser.addEventListener('change', function(){
 
@@ -139,8 +142,8 @@ const   pinMain = document.querySelector('.map__pin--main'),
 // МАНИПУЛЯЦИИ С INPUT и SELECT
 (function() {
     // Установление связи между типом жилья и ценой
-    // const   type = document.getElementById('type'),
-    //         price = document.getElementById('price');
+    const   type = document.getElementById('type'),
+            price = document.getElementById('price');
 
     type.addEventListener('change', function () {
         switch (this.value) {
@@ -194,8 +197,8 @@ const   pinMain = document.querySelector('.map__pin--main'),
 
 // Валидация формы
 (function() {
-    // const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
-    //         formSubmit = document.querySelector('.form__submit');
+    const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
+            formSubmit = document.querySelector('.form__submit');
 
     formSubmit.addEventListener('click', function() { 
         for (let i = 0; i < formElement.length; i++) {
@@ -217,6 +220,11 @@ const   pinMain = document.querySelector('.map__pin--main'),
 
 // Отправка данных из формы на сервер
 (function() {
+
+    const   noticeForm = document.querySelector('.notice__form'),
+            map = document.querySelector('.map'),
+            pinMain = document.querySelector('.map__pin--main');
+
     let URL = 'https://js.dump.academy/keksobooking';
 
     const onError = function (message) {
@@ -225,14 +233,13 @@ const   pinMain = document.querySelector('.map__pin--main'),
 
     const onSuccess = function (param) {
         console.log(param);
-        
-        noticeForm.reset();
+
         map.classList.add('map--faded');
+        pinMain.style.cssText = 'top: 375px \ left: 50%';
+        noticeForm.reset();
         noticeForm.classList.add('notice__form--disabled');
-        
 
         const pins = document.querySelectorAll('#mapPin');
-        
         for (let i = 0; i < pins.length; i++) {
             pins[i].classList.add('visuallyhidden');
         }
@@ -303,6 +310,7 @@ const   pinMain = document.querySelector('.map__pin--main'),
           if (xhr.status === 200) {
             let notices;
             notices = xhr.response;
+            console.log(notices);
             
             showAds(notices);
             
@@ -336,8 +344,10 @@ const showAds = function (data) {
 
         const   temp = document.querySelector('template'),
                 tempClone = document.importNode(temp.content, true),
-                map = document.querySelector('.map__pins');
-        
+                mapPins = document.querySelector('.map__pins');
+
+        // console.log(tempClone);
+
         let     mapPinTemplate = tempClone.querySelector('.map__pin'),
                 mapCardTemplate = tempClone.querySelector('.map__card'),
                 pins = [],
@@ -347,44 +357,55 @@ const showAds = function (data) {
             pins[i] = mapPinTemplate.cloneNode(true);
             pins[i].setAttribute('style', `left: ${data[i].location.x}px; top: ${data[i].location.y}px`);
             pins[i].querySelector('img').setAttribute('src', `${data[i].author.avatar}`);
-            map.appendChild(pins[i]);
+            mapPins.appendChild(pins[i]);
             pins[i].classList.add('visuallyhidden');
 
-            console.log(`${data[i].offer.type}`);
 
-            // switch (`${data[i].offer.type}`) {
-            //     case 'flat':
-            //         (`${data[i].offer.type}`) = 'Квартира';
-            //         break;
-            //     case 'bungalo':
-            //         (`${data[i].offer.type}`) = 'Лачуга';
-            //         break;
-            //     case 'house':
-            //         (`${data[i].offer.type}`) = 'Дом';
-            //         break;
-            //     case 'palace':
-            //         (`${data[i].offer.type}`) = 'Дворец';
-            //         break;
-            // }
-
+            
             cards[i] = mapCardTemplate.cloneNode(true);
             cards[i].querySelector('.popup__avatar').setAttribute('src', `${data[i].author.avatar}`);
             cards[i].querySelector('.popup__title').innerHTML = `${data[i].offer.title}`;
-            cards[i].querySelector('.popup__address small').innerHTML = `${data[i].offer.address}`;
+            cards[i].querySelector('.popup__address').innerHTML = `<small>${data[i].offer.address}</small>`;
             cards[i].querySelector('.popup__price').innerHTML = `${data[i].offer.price}&#x20bd;/ночь`;
-            cards[i].querySelector('.popup__type').innerHTML = `${data[i].offer.type}`;
+            
+            switch (`${data[i].offer.type}`) {
+                case 'flat':
+                    cards[i].querySelector('.popup__type').innerHTML = 'Квартира';
+                    break;
+                case 'bungalo':
+                    cards[i].querySelector('.popup__type').innerHTML = 'Лачуга';
+                    break;
+                case 'house':
+                    cards[i].querySelector('.popup__type').innerHTML = 'Дом';
+                    break;
+                case 'palace':
+                    cards[i].querySelector('.popup__type').innerHTML = 'Дворец';
+                    break;
+            }
+
             cards[i].querySelector('.popup__capacity').innerHTML = `${data[i].offer.rooms} комнаты для ${data[i].offer.guests} гостей`;
             cards[i].querySelector('.popup__timing').innerHTML = `Заезд после ${data[i].offer.checkin}, выезд до ${data[i].offer.checkout}`;
-            
             cards[i].querySelector('.popup__description').innerHTML = `${data[i].offer.description}`;
+            
+            cardsFeatures = cards[i].querySelectorAll('.feature');
+            for (let i = 0; i < cardsFeatures.length; i++) {
+                cardsFeatures[i].remove();
+            }
+            cardsFeaturesContainer = cards[i].querySelector('.popup__features');
+            adFeatures = data[i].offer.features;
+            adFeatures.forEach(function(item) {
+                adFeaturesItem = document.createElement('li');
+                adFeaturesItem.className = `feature feature--${item}`;
+                cardsFeaturesContainer.appendChild(adFeaturesItem);
+            });
 
-            map.appendChild(cards[i]);
+            mapPins.appendChild(cards[i]);
             cards[i].classList.add('visuallyhidden');
-
         }
+
         
-        const mapMap = document.querySelector('.map');
-        if (!(mapMap.classList.contains('map--faded'))) {
+        const map = document.querySelector('.map');
+        if (!(map.classList.contains('map--faded'))) {
 
             for (let i = 0; i < pins.length; i++) {
                 pins[i].classList.add('visuallyhidden');
@@ -392,7 +413,7 @@ const showAds = function (data) {
             
         }
 
-        map.addEventListener('click', function (evt) {
+        mapPins.addEventListener('click', function (evt) {
             let target = evt.target;
             
             while (target !== map) {
@@ -412,3 +433,8 @@ const showAds = function (data) {
 
     }
 }
+
+// Фильтруем объявления
+// (function(){
+
+// })();
