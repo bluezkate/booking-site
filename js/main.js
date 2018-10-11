@@ -1,11 +1,22 @@
 // 'use strict';
-
-// Перемещение метки по карте + установление значения адреса
-(function () {
-    const   pinMain = document.querySelector('.map__pin--main'),
+const   pinMain = document.querySelector('.map__pin--main'),
             map = document.querySelector('.map'),
             noticeForm = document.querySelector('.notice__form'),
             address = document.getElementById('address');
+            const pins = document.querySelectorAll('#mapPin');
+            const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+            const picChooserr = document.querySelector('.notice__photo input[type=file]');
+            const picPreview = document.querySelector('.notice__photo img');
+    const picContainer = document.querySelector('.form__photo-container');
+    const picChooser = document.querySelector('.form__photo-container input[type=file]');
+    const   type = document.getElementById('type'),
+            price = document.getElementById('price');
+            const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
+            formSubmit = document.querySelector('.form__submit');
+
+
+// Перемещение метки по карте + установление значения адреса
+(function () {
 
     address.value = `${pinMain.offsetLeft}, ${pinMain.offsetTop}`;
 
@@ -36,11 +47,19 @@
             }
 
             // Активируем карту и форму отправки
-            // Сделать условие, при котором код выполняется только при первом передвижении кнопки
-            map.classList.remove('map--faded');
-            noticeForm.classList.remove('notice__form--disabled');
-
-
+            // const pins = document.querySelectorAll('.map__pin-template');
+            
+            if (map.classList.contains('map--faded') &&  noticeForm.classList.contains('notice__form--disabled')) {
+                map.classList.remove('map--faded');
+                noticeForm.classList.remove('notice__form--disabled');
+                const pins = document.querySelectorAll('#mapPin');
+                setTimeout ( function() {
+                    for (let i = 0; i < pins.length; i++) {
+                    pins[i].classList.remove('visuallyhidden');
+                    }
+                }, 100);
+            }
+            
             // Подставляем в поле "Адрес" текущие координаты метки
             address.value = `${pinMain.offsetLeft - shift.x + 32}, ${pinMain.offsetTop - shift.y + 75}`;
         }
@@ -58,9 +77,9 @@
 
 // Отображение аватарки
 (function (){
-    const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-    const picChooserr = document.querySelector('.notice__photo input[type=file]');
-    const picPreview = document.querySelector('.notice__photo img');
+    // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+    // const picChooserr = document.querySelector('.notice__photo input[type=file]');
+    // const picPreview = document.querySelector('.notice__photo img');
 
     picChooserr.addEventListener('change', function(){
         let file = picChooserr.files[0];
@@ -85,9 +104,9 @@
 
 // Отображение фотографий жилья
 (function (){
-    const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-    const picContainer = document.querySelector('.form__photo-container');
-    const picChooser = document.querySelector('.form__photo-container input[type=file]');
+    // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+    // const picContainer = document.querySelector('.form__photo-container');
+    // const picChooser = document.querySelector('.form__photo-container input[type=file]');
 
     picChooser.addEventListener('change', function(){
 
@@ -120,8 +139,8 @@
 // МАНИПУЛЯЦИИ С INPUT и SELECT
 (function() {
     // Установление связи между типом жилья и ценой
-    const   type = document.getElementById('type'),
-            price = document.getElementById('price');
+    // const   type = document.getElementById('type'),
+    //         price = document.getElementById('price');
 
     type.addEventListener('change', function () {
         switch (this.value) {
@@ -175,8 +194,8 @@
 
 // Валидация формы
 (function() {
-    const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
-            formSubmit = document.querySelector('.form__submit');
+    // const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
+    //         formSubmit = document.querySelector('.form__submit');
 
     formSubmit.addEventListener('click', function() { 
         for (let i = 0; i < formElement.length; i++) {
@@ -206,6 +225,17 @@
 
     const onSuccess = function (param) {
         console.log(param);
+        
+        noticeForm.reset();
+        map.classList.add('map--faded');
+        noticeForm.classList.add('notice__form--disabled');
+        
+
+        const pins = document.querySelectorAll('#mapPin');
+        
+        for (let i = 0; i < pins.length; i++) {
+            pins[i].classList.add('visuallyhidden');
+        }
     }
 
     window.upload = function (data, onError, onSuccess) {
@@ -250,7 +280,6 @@
         xhr.send(data);
     }
 
-    const noticeForm = document.querySelector('.notice__form');
     noticeForm.addEventListener('submit', function(evt) {
         window.upload((new FormData(noticeForm)), onError, onSuccess);
 
@@ -274,9 +303,9 @@
           if (xhr.status === 200) {
             let notices;
             notices = xhr.response;
-        
+            
             showAds(notices);
-
+            
           } else {
             onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
           }
@@ -300,91 +329,43 @@
 })();
 
 // Вывод полученных данных в интерфейс
-
-
-// Создание карточек объявлений
-
 // Открытие/закрытие карточек с объявлениями
-// (function() {
-
-//     const map = document.querySelector('.map__pins');
-
-//     var selectedPin;
-//     map.addEventListener('click', cardShow); 
-//     function cardShow (evt) {
-//     let target = evt.target;
-
-//     while (target !== map) {
-
-//         if(target.classList.contains('map__pin-template')) {
-//             // target.nextElementSibling.classList.remove('visuallyhidden');
-//             showCard(target);
-//             return;
-//         }
-
-//         target = target.parentNode;
-//     }
-
-//         map.removeEventListener('click', cardShow);
-//     };
-
-//     function showCard (node) {
-//         if (selectedPin) {
-//             selectedPin.nextElementSibling.classList.remove('visuallyhidden');
-//         }
-
-//         selectedPin = node;
-//         selectedPin.nextElementSibling.classList.add('visuallyhidden');
-//     }
-
-//     const temp = document.querySelector('template');
-//     const tempClone = document.importNode(temp.content, true);
-//     console.log(tempClone);
-
-//     let popupClose = tempClone.querySelectorAll('.popup__close');
-//     console.log(popupClose);
-
-//     for(let i = 0; i < popupClose.length; i++) {
-//         popupClose[i].addEventListener('click', function (evt) {
-//         popupClose.parentNode.classList.add('visuallyhidden');
-//         console.log(popupClose.parentNode);
-//     });
-//     }
-
-
-// })();
-
-
 const showAds = function (data) {
 
     if ('content' in document.createElement('template')) {
-        const temp = document.querySelector('template');
-        const tempClone = document.importNode(temp.content, true);
-        const map = document.querySelector('.map__pins');
 
+        const   temp = document.querySelector('template'),
+                tempClone = document.importNode(temp.content, true),
+                map = document.querySelector('.map__pins');
         
-        let mapPinTemplate = tempClone.querySelector('.map__pin');
-        let mapCardTemplate = tempClone.querySelector('.map__card');
-        // tempClone.removeChild(tempClone.childNodes[9]);
-        let pins = [];
-        let cards = [];
+        let     mapPinTemplate = tempClone.querySelector('.map__pin'),
+                mapCardTemplate = tempClone.querySelector('.map__card'),
+                pins = [],
+                cards = [];
 
         for (let i = 0; i < data.length; i++) {
             pins[i] = mapPinTemplate.cloneNode(true);
-            console.log(data[i]);
             pins[i].setAttribute('style', `left: ${data[i].location.x}px; top: ${data[i].location.y}px`);
             pins[i].querySelector('img').setAttribute('src', `${data[i].author.avatar}`);
             map.appendChild(pins[i]);
+            pins[i].classList.add('visuallyhidden');
 
-            // pins[i].addEventListener('click', function(){
+            console.log(`${data[i].offer.type}`);
 
-            //     for (let i = 0; i < mapCards.length; i++) {
-            //         mapCards[i].classList.add('visuallyhidden');
-            //     }
-
-            //     pins[i].nextElementSibling.classList.remove('visuallyhidden');
-            // });
-            
+            // switch (`${data[i].offer.type}`) {
+            //     case 'flat':
+            //         (`${data[i].offer.type}`) = 'Квартира';
+            //         break;
+            //     case 'bungalo':
+            //         (`${data[i].offer.type}`) = 'Лачуга';
+            //         break;
+            //     case 'house':
+            //         (`${data[i].offer.type}`) = 'Дом';
+            //         break;
+            //     case 'palace':
+            //         (`${data[i].offer.type}`) = 'Дворец';
+            //         break;
+            // }
 
             cards[i] = mapCardTemplate.cloneNode(true);
             cards[i].querySelector('.popup__avatar').setAttribute('src', `${data[i].author.avatar}`);
@@ -401,25 +382,33 @@ const showAds = function (data) {
             cards[i].classList.add('visuallyhidden');
 
         }
+        
+        const mapMap = document.querySelector('.map');
+        if (!(mapMap.classList.contains('map--faded'))) {
 
-        for(let i = 0; i < pins.length; i++) {
-             pins[i].addEventListener('click', function(){
+            for (let i = 0; i < pins.length; i++) {
+                pins[i].classList.add('visuallyhidden');
+            }
+            
+        }
 
-                for (let i = 0; i < cards.length; i++) {
-                    cards[i].classList.add('visuallyhidden');
+        map.addEventListener('click', function (evt) {
+            let target = evt.target;
+            
+            while (target !== map) {
+                if(target.classList.contains('map__pin-template')) {
+                    for (let i = 0; i < cards.length; i++) {
+                        cards[i].classList.add('visuallyhidden');
+                    }
+                    target.nextElementSibling.classList.remove('visuallyhidden');
+                    return;
+                } else if (target.classList.contains('popup__close')) {
+                    target.parentNode.classList.add('visuallyhidden');  
                 }
 
-                pins[i].nextElementSibling.classList.remove('visuallyhidden');
-            });
-        }
+                target = target.parentNode;
+            }
+        });
 
-        let cardsClose = document.querySelectorAll('.popup__close');
-        console.log(cardsClose);
-
-        for (let i = 0; i < cardsClose.length; i++) {
-            cardsClose[i].addEventListener('click', function(){
-                cardsClose[i].parentNode.classList.add('visuallyhidden');
-            });
-        }
     }
 }
