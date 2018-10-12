@@ -1,20 +1,4 @@
-// 'use strict';
-// const   pinMain = document.querySelector('.map__pin--main'),
-//             map = document.querySelector('.map'),
-//             noticeForm = document.querySelector('.notice__form'),
-//             address = document.getElementById('address');
-            // const pins = document.querySelectorAll('#mapPin');
-            // const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
-            // const picChooserr = document.querySelector('.notice__photo input[type=file]');
-            // const picPreview = document.querySelector('.notice__photo img');
-    // const picContainer = document.querySelector('.form__photo-container');
-    // const picChooser = document.querySelector('.form__photo-container input[type=file]');
-    // const   type = document.getElementById('type'),
-    //         price = document.getElementById('price');
-            // const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
-            // formSubmit = document.querySelector('.form__submit');
-            
-
+'use strict';
 // Перемещение метки по карте + установление значения адреса
 (function () {
 
@@ -61,6 +45,8 @@
                     pins[i].classList.remove('visuallyhidden');
                     }
                 }, 100);
+
+                filterPins();
             }
             
             // Подставляем в поле "Адрес" текущие координаты метки
@@ -198,7 +184,8 @@
 // Валидация формы
 (function() {
     const   formElement = document.querySelectorAll('.notice__form input[type=text], input[type=number]'),
-            formSubmit = document.querySelector('.form__submit');
+            formSubmit = document.querySelector('.form__submit'),
+            formReset = document.querySelector('.form__reset');
 
     formSubmit.addEventListener('click', function() { 
         for (let i = 0; i < formElement.length; i++) {
@@ -215,6 +202,24 @@
             });
         }
     });
+
+    formReset.addEventListener('click', function () {
+        const   noticeForm = document.querySelector('.notice__form'),
+        map = document.querySelector('.map'),
+        pinMain = document.querySelector('.map__pin--main');
+
+
+        map.classList.add('map--faded');
+        pinMain.style.cssText = 'top: 375px \ left: 50%';
+        noticeForm.classList.add('notice__form--disabled');
+
+        const pins = document.querySelectorAll('#mapPin');
+        for (let i = 0; i < pins.length; i++) {
+            pins[i].classList.add('visuallyhidden');
+        }
+        // сделать функцию возврата к изначальному состоянию
+    });
+
 })();
 
 
@@ -234,15 +239,17 @@
     const onSuccess = function (param) {
         console.log(param);
 
+        noticeForm.reset();
         map.classList.add('map--faded');
         pinMain.style.cssText = 'top: 375px \ left: 50%';
-        noticeForm.reset();
+        
         noticeForm.classList.add('notice__form--disabled');
 
         const pins = document.querySelectorAll('#mapPin');
         for (let i = 0; i < pins.length; i++) {
             pins[i].classList.add('visuallyhidden');
         }
+        // сделать функцию возврата к изначальному состоянию
     }
 
     window.upload = function (data, onError, onSuccess) {
@@ -313,7 +320,6 @@
             console.log(notices);
             
             showAds(notices);
-            
           } else {
             onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
           }
@@ -332,8 +338,6 @@
 
     };
 
-    
-
 })();
 
 // Вывод полученных данных в интерфейс
@@ -345,8 +349,6 @@ const showAds = function (data) {
         const   temp = document.querySelector('template'),
                 tempClone = document.importNode(temp.content, true),
                 mapPins = document.querySelector('.map__pins');
-
-        // console.log(tempClone);
 
         let     mapPinTemplate = tempClone.querySelector('.map__pin'),
                 mapCardTemplate = tempClone.querySelector('.map__card'),
@@ -360,14 +362,12 @@ const showAds = function (data) {
             mapPins.appendChild(pins[i]);
             pins[i].classList.add('visuallyhidden');
 
-
             
             cards[i] = mapCardTemplate.cloneNode(true);
             cards[i].querySelector('.popup__avatar').setAttribute('src', `${data[i].author.avatar}`);
             cards[i].querySelector('.popup__title').innerHTML = `${data[i].offer.title}`;
             cards[i].querySelector('.popup__address').innerHTML = `<small>${data[i].offer.address}</small>`;
             cards[i].querySelector('.popup__price').innerHTML = `${data[i].offer.price}&#x20bd;/ночь`;
-            
             switch (`${data[i].offer.type}`) {
                 case 'flat':
                     cards[i].querySelector('.popup__type').innerHTML = 'Квартира';
@@ -382,19 +382,18 @@ const showAds = function (data) {
                     cards[i].querySelector('.popup__type').innerHTML = 'Дворец';
                     break;
             }
-
             cards[i].querySelector('.popup__capacity').innerHTML = `${data[i].offer.rooms} комнаты для ${data[i].offer.guests} гостей`;
             cards[i].querySelector('.popup__timing').innerHTML = `Заезд после ${data[i].offer.checkin}, выезд до ${data[i].offer.checkout}`;
             cards[i].querySelector('.popup__description').innerHTML = `${data[i].offer.description}`;
             
-            cardsFeatures = cards[i].querySelectorAll('.feature');
+            const cardsFeatures = cards[i].querySelectorAll('.feature');
             for (let i = 0; i < cardsFeatures.length; i++) {
                 cardsFeatures[i].remove();
             }
-            cardsFeaturesContainer = cards[i].querySelector('.popup__features');
-            adFeatures = data[i].offer.features;
+            const cardsFeaturesContainer = cards[i].querySelector('.popup__features');
+            let adFeatures = data[i].offer.features;
             adFeatures.forEach(function(item) {
-                adFeaturesItem = document.createElement('li');
+                let adFeaturesItem = document.createElement('li');
                 adFeaturesItem.className = `feature feature--${item}`;
                 cardsFeaturesContainer.appendChild(adFeaturesItem);
             });
@@ -422,6 +421,7 @@ const showAds = function (data) {
                         cards[i].classList.add('visuallyhidden');
                     }
                     target.nextElementSibling.classList.remove('visuallyhidden');
+                    target.nextElementSibling.classList.add('map__pin--active');
                     return;
                 } else if (target.classList.contains('popup__close')) {
                     target.parentNode.classList.add('visuallyhidden');  
@@ -432,9 +432,89 @@ const showAds = function (data) {
         });
 
     }
+
+    filterPins(data);
+};
+
+const filterPins = function (data) {
+
+    const   filterType = document.getElementById('housing-type'),
+            filterPrice = document.getElementById('housing-price'),
+            filterRooms = document.getElementById('housing-rooms'),
+            filterGuests = document.getElementById('housing-guests');
+
+    let pins = document.querySelectorAll('.map__pin-template'),
+        cards = document.querySelectorAll('.popup'),
+        cardsType = document.querySelectorAll('.popup__type'),
+        cardsPrice = document.querySelectorAll('.popup__price'),
+        cardsCapacity = document.querySelectorAll('.popup__capacity');
+
+    if (cards.length > 0) {
+
+        filterType.addEventListener('change', function() {
+            for (let i = 0; i < pins.length; i++) {
+                pins[i].classList.remove('visuallyhidden');
+            }
+            console.log(data);
+            // if(data.length !== undefined) {
+                for(let i = 0; i < data.length; i++) {
+                    // console.log(data[i].offer.type);
+                    // console.log(data.length);
+                    if(filterType.options[filterType.selectedIndex].text !== data[i].offer.type) {
+                        pins[i].classList.add('visuallyhidden');
+                    } 
+                }
+            // }
+            
+        });
+
+        
+
+        // filterPrice.addEventListener('change', function() {
+        //     for (let i = 0; i < pins.length; i++) {
+        //         pins[i].classList.remove('visuallyhidden');
+        //     }
+        //     for(let i = 0; i < cardsPrice.length; i++) {
+        //         // if (filterPrice.value === '')
+        //         console.log(filterPrice.value);
+        //         console.log(cardsPrice[i].innerHTML);
+        //         switch (filterPrice.value) {
+        //             case 'low':
+        //                 if (+(cardsPrice[i].value) > 10000) {
+        //                     pins[i].classList.add('visuallyhidden');
+        //                 }
+        //                 break;
+        //         }
+        //     }
+        // });
+
+        // filterRooms.addEventListener('change', function() {
+        //     for (let i = 0; i < pins.length; i++) {
+        //         pins[i].classList.remove('visuallyhidden');
+        //     }
+        //     for(let i = 0; i < cardsCapacity.length; i++) {
+        //         if(filterRooms.options[filterType.selectedIndex].text !== cardsType[i].innerHTML) {
+        //             pins[i].classList.add('visuallyhidden');
+        //         } 
+        //     }
+        // });
+
+        // filterGuests.addEventListener('change', function() {
+        //     for (let i = 0; i < pins.length; i++) {
+        //         pins[i].classList.remove('visuallyhidden');
+        //     }
+        //     for(let i = 0; i < cardsCapacity.length; i++) {
+        //         if(filterGuests.options[filterType.selectedIndex].text !== cardsType[i].innerHTML) {
+        //             pins[i].classList.add('visuallyhidden');
+        //         } 
+        //     }
+        // });
+
+        
+
+    } else {
+        alert('Данные не загрузились, попробуйте позже!');
+    }
+
+
 }
-
-// Фильтруем объявления
-// (function(){
-
-// })();
