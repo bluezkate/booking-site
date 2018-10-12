@@ -46,7 +46,6 @@
                     }
                 }, 100);
 
-                filterPins();
             }
             
             // Подставляем в поле "Адрес" текущие координаты метки
@@ -317,7 +316,6 @@
           if (xhr.status === 200) {
             let notices;
             notices = xhr.response;
-            console.log(notices);
             
             showAds(notices);
           } else {
@@ -421,7 +419,7 @@ const showAds = function (data) {
                         cards[i].classList.add('visuallyhidden');
                     }
                     target.nextElementSibling.classList.remove('visuallyhidden');
-                    target.nextElementSibling.classList.add('map__pin--active');
+                    target.classList.add('map__pin--active');
                     return;
                 } else if (target.classList.contains('popup__close')) {
                     target.parentNode.classList.add('visuallyhidden');  
@@ -438,77 +436,86 @@ const showAds = function (data) {
 
 const filterPins = function (data) {
 
+    console.log(data);
+
     const   filterType = document.getElementById('housing-type'),
             filterPrice = document.getElementById('housing-price'),
             filterRooms = document.getElementById('housing-rooms'),
             filterGuests = document.getElementById('housing-guests');
 
-    let pins = document.querySelectorAll('.map__pin-template'),
-        cards = document.querySelectorAll('.popup'),
-        cardsType = document.querySelectorAll('.popup__type'),
-        cardsPrice = document.querySelectorAll('.popup__price'),
-        cardsCapacity = document.querySelectorAll('.popup__capacity');
+    let pins = document.querySelectorAll('.map__pin-template');
 
-    if (cards.length > 0) {
+    if (data.length > 0) {
 
         filterType.addEventListener('change', function() {
             for (let i = 0; i < pins.length; i++) {
                 pins[i].classList.remove('visuallyhidden');
             }
-            console.log(data);
-            // if(data.length !== undefined) {
-                for(let i = 0; i < data.length; i++) {
-                    // console.log(data[i].offer.type);
-                    // console.log(data.length);
-                    if(filterType.options[filterType.selectedIndex].text !== data[i].offer.type) {
-                        pins[i].classList.add('visuallyhidden');
-                    } 
+            for(let i = 0; i < data.length; i++) {
+                if(filterType.value !== data[i].offer.type) {
+                    pins[i].classList.add('visuallyhidden');
+                } else if (filterType.value === 'any') {
+                    pins[i].classList.remove('visuallyhidden');
                 }
-            // }
-            
+            }   
         });
 
-        
+        filterPrice.addEventListener('change', function(){
+            for (let i = 0; i < pins.length; i++) {
+                pins[i].classList.remove('visuallyhidden');
+            }
+            for(let i = 0; i < data.length; i++) {
+                switch (filterPrice.value) {
+                    case 'low':
+                        if (data[i].offer.price > 10000) {
+                            pins[i].classList.add('visuallyhidden');}
+                        break;
+                    case 'middle':
+                        if ((data[i].offer.price < 10000) && (data[i].offer.price > 50000)) {
+                            pins[i].classList.add('visuallyhidden');}
+                        break;
+                    case 'high': 
+                        if(data[i].offer.price < 50000) {
+                            pins[i].classList.add('visuallyhidden');}
+                        break;
+                    case 'any':
+                            pins[i].classList.remove('visuallyhidden');
+                        break;
+                    default: 
+                        break;  
+                }
+            }
+        });
 
-        // filterPrice.addEventListener('change', function() {
-        //     for (let i = 0; i < pins.length; i++) {
-        //         pins[i].classList.remove('visuallyhidden');
-        //     }
-        //     for(let i = 0; i < cardsPrice.length; i++) {
-        //         // if (filterPrice.value === '')
-        //         console.log(filterPrice.value);
-        //         console.log(cardsPrice[i].innerHTML);
-        //         switch (filterPrice.value) {
-        //             case 'low':
-        //                 if (+(cardsPrice[i].value) > 10000) {
-        //                     pins[i].classList.add('visuallyhidden');
-        //                 }
-        //                 break;
-        //         }
-        //     }
-        // });
+        filterRooms.addEventListener('change', function() {
+            for (let i = 0; i < pins.length; i++) {
+                pins[i].classList.remove('visuallyhidden');
+            }
+       
+            for(let i = 0; i < data.length; i++) {
+                if(+(filterRooms.value) !== data[i].offer.rooms) {
+                    pins[i].classList.add('visuallyhidden');
+                } else if (filterRooms.value === 'any') {
+                    pins[i].classList.remove('visuallyhidden');
+                }
+            }   
+        });
 
-        // filterRooms.addEventListener('change', function() {
-        //     for (let i = 0; i < pins.length; i++) {
-        //         pins[i].classList.remove('visuallyhidden');
-        //     }
-        //     for(let i = 0; i < cardsCapacity.length; i++) {
-        //         if(filterRooms.options[filterType.selectedIndex].text !== cardsType[i].innerHTML) {
-        //             pins[i].classList.add('visuallyhidden');
-        //         } 
-        //     }
-        // });
+        filterGuests.addEventListener('change', function() {
+            for (let i = 0; i < pins.length; i++) {
+                pins[i].classList.remove('visuallyhidden');
+            }
 
-        // filterGuests.addEventListener('change', function() {
-        //     for (let i = 0; i < pins.length; i++) {
-        //         pins[i].classList.remove('visuallyhidden');
-        //     }
-        //     for(let i = 0; i < cardsCapacity.length; i++) {
-        //         if(filterGuests.options[filterType.selectedIndex].text !== cardsType[i].innerHTML) {
-        //             pins[i].classList.add('visuallyhidden');
-        //         } 
-        //     }
-        // });
+       console.log(filterGuests.value)
+            for(let i = 0; i < data.length; i++) {
+                if(+(filterGuests.value) !== data[i].offer.guests) {
+                    pins[i].classList.add('visuallyhidden');
+                } else if (filterGuests.value === 'any') {
+                    console.log(filterGuests.value)
+                    pins[i].classList.remove('visuallyhidden');
+                }
+            }   
+        });
 
         
 
