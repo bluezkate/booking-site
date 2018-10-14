@@ -107,7 +107,10 @@
 
             const picPreview = document.createElement('img');
             picPreview.setAttribute('width', '200');
-            picContainer.appendChild(picPreview);
+            const formPhoto = document.createElement('div');
+            formPhoto.classList.add('form__photo');
+            formPhoto.appendChild(picPreview);
+            picContainer.appendChild(formPhoto);
 
             if (matches) {
                 const reader = new FileReader();
@@ -226,6 +229,8 @@
 (function() {
 
     const   noticeForm = document.querySelector('.notice__form'),
+            picPreview = document.querySelector('.notice__photo img'),
+            picContainer = document.querySelectorAll('.form__photo'),
             map = document.querySelector('.map'),
             pinMain = document.querySelector('.map__pin--main');
 
@@ -238,10 +243,14 @@
     const onSuccess = function (param) {
         console.log(param);
 
+        
+        picPreview.src = "img/muffin.png";
+        pinMain.style.cssText = 'top: 375px \ left: 50%';
+        // while(picContainer.length > 0){
+        //     picContainer[0].parentNode.removeChild(picContainer[0]);
+        // }
         noticeForm.reset();
         map.classList.add('map--faded');
-        pinMain.style.cssText = 'top: 375px \ left: 50%';
-        
         noticeForm.classList.add('notice__form--disabled');
 
         const pins = document.querySelectorAll('#mapPin');
@@ -289,12 +298,24 @@
         });
         xhr.timeout = 10000;
 
+        console.log(picContainer);
+        // while(picContainer.length > 0){
+        //     console.log(picContainer);
+        //     picContainer[0].parentNode.removeChild(picContainer[0]);
+        // }
+
         xhr.open('POST', URL);
         xhr.send(data);
     }
 
     noticeForm.addEventListener('submit', function(evt) {
         window.upload((new FormData(noticeForm)), onError, onSuccess);
+
+        console.log(picContainer);
+        while(picContainer.length > 0){
+            console.log(picContainer);
+            picContainer[0].parentNode.removeChild(picContainer[0]);
+        }
 
         evt.preventDefault();
     });
@@ -414,7 +435,7 @@ const showAds = function (data) {
             let target = evt.target;
             
             while (target !== map) {
-                if(target.classList.contains('map__pin-template')) {
+                if (target.classList.contains('map__pin-template')) {
                     for (let i = 0; i < cards.length; i++) {
                         cards[i].classList.add('visuallyhidden');
                     }
@@ -441,43 +462,76 @@ const filterPins = function (data) {
     const   filterType = document.getElementById('housing-type'),
             filterPrice = document.getElementById('housing-price'),
             filterRooms = document.getElementById('housing-rooms'),
-            filterGuests = document.getElementById('housing-guests');
+            filterGuests = document.getElementById('housing-guests'),
+            filterFeatures = document.getElementById('housing-features');
 
-    let pins = document.querySelectorAll('.map__pin-template');
+    let pins = document.querySelectorAll('.map__pin-template'),
+        filterArray = [];
+
+    // const revertPins = function () {
+    //     for (let i = 0; i < pins.length; i++) {
+    //         pins[i].classList.remove('visuallyhidden');
+    //     }
+    // };
 
     if (data.length > 0) {
 
-        filterType.addEventListener('change', function() {
-            for (let i = 0; i < pins.length; i++) {
-                pins[i].classList.remove('visuallyhidden');
-            }
-            for(let i = 0; i < data.length; i++) {
+        // for (let i = 0; i < pins.length; i++) {
+        //     switch (true) {
+        //         case (filterType.options[filterType.selectedIndex].value !== data[i].offer.type):
+        //         case (filterRooms.options[filterType.selectedIndex].value !== data[i].offer.rooms):
+        //         case (filterGuests.options[filterType.selectedIndex].value !== data[i].offer.guests):
+        //             filterArray.push(pins[i]);
+        //             break;
+        //         case (filterPrice.options[filterType.selectedIndex].value !== data[i].offer.price):
+        //             priceFunction();
+        //             break;
+        //         // case (filterType.options[filterType.selectedIndex].value !== data[i].offer.type):
+
+        //     }
+        // }
+
+        
+
+        filterType.addEventListener('change', addTypeToArray); 
+        
+        var addTypeToArray = function () {
+
+            for (let i = 0; i < data.length; i++) {
                 if(filterType.value !== data[i].offer.type) {
-                    pins[i].classList.add('visuallyhidden');
-                } else if (filterType.value === 'any') {
+                    // pins[i].classList.add('visuallyhidden');
+                    return filterArray.push(pins[i]);
+                }
+                if (filterType.value === 'any') {
                     pins[i].classList.remove('visuallyhidden');
                 }
             }   
-        });
+        };
 
-        filterPrice.addEventListener('change', function(){
-            for (let i = 0; i < pins.length; i++) {
-                pins[i].classList.remove('visuallyhidden');
-            }
-            for(let i = 0; i < data.length; i++) {
+        filterPrice.addEventListener('change', addPriceToArray);
+        
+        var addPriceToArray = function () {
+
+            for ( let i = 0; i < data.length; i++ ) {
                 switch (filterPrice.value) {
                     case 'low':
                         if (data[i].offer.price > 10000) {
-                            pins[i].classList.add('visuallyhidden');}
-                        break;
+                            // pins[i].classList.add('visuallyhidden');
+                            return filterArray.push(pins[i]);
+                        }
+                            break;
                     case 'middle':
-                        if ((data[i].offer.price < 10000) && (data[i].offer.price > 50000)) {
-                            pins[i].classList.add('visuallyhidden');}
-                        break;
+                        if (!((data[i].offer.price >= 10000) && (data[i].offer.price < 50000))) {
+                            // pins[i].classList.add('visuallyhidden');
+                            return filterArray.push(pins[i]);
+                        }
+                            break;
                     case 'high': 
                         if(data[i].offer.price < 50000) {
-                            pins[i].classList.add('visuallyhidden');}
-                        break;
+                            // pins[i].classList.add('visuallyhidden');
+                            return filterArray.push(pins[i]);
+                        }
+                            break;
                     case 'any':
                             pins[i].classList.remove('visuallyhidden');
                         break;
@@ -485,43 +539,104 @@ const filterPins = function (data) {
                         break;  
                 }
             }
-        });
+        };
 
-        filterRooms.addEventListener('change', function() {
-            for (let i = 0; i < pins.length; i++) {
-                pins[i].classList.remove('visuallyhidden');
-            }
-       
-            for(let i = 0; i < data.length; i++) {
-                if(+(filterRooms.value) !== data[i].offer.rooms) {
-                    pins[i].classList.add('visuallyhidden');
-                } else if (filterRooms.value === 'any') {
-                    pins[i].classList.remove('visuallyhidden');
-                }
-            }   
-        });
+        // const priceFunction = function() {
+            
+        //     for ( let i = 0; i < data.length; i++ ) {
+        //         switch (filterPrice.value) {
+        //             case 'low':
+        //                 if (data[i].offer.price > 10000) {
+        //                     // pins[i].classList.add('visuallyhidden');}
+        //                     filterArray.push(pins[i]);}
+        //                     break;
+        //             case 'middle':
+        //                 if (!((data[i].offer.price >= 10000) && (data[i].offer.price < 50000))) {
+        //                     // pins[i].classList.add('visuallyhidden');}
+        //                     filterArray.push(pins[i]);}
+        //                     break;
+        //             case 'high': 
+        //                 if(data[i].offer.price < 50000) {
+        //                     // pins[i].classList.add('visuallyhidden');}
+        //                     filterArray.push(pins[i]);}
+        //                     break;
+        //             case 'any':
+        //                     pins[i].classList.remove('visuallyhidden');
+        //                 break;
+        //             default: 
+        //                 break;  
+        //         }
+        //     }
+        // };
 
-        filterGuests.addEventListener('change', function() {
-            for (let i = 0; i < pins.length; i++) {
-                pins[i].classList.remove('visuallyhidden');
-            }
-
-       console.log(filterGuests.value)
-            for(let i = 0; i < data.length; i++) {
-                if(+(filterGuests.value) !== data[i].offer.guests) {
-                    pins[i].classList.add('visuallyhidden');
-                } else if (filterGuests.value === 'any') {
-                    console.log(filterGuests.value)
-                    pins[i].classList.remove('visuallyhidden');
-                }
-            }   
-        });
-
+        filterRooms.addEventListener('change', addRoomsToArray);
         
+        var addRoomsToArray = function () {
+
+            for(let i = 0; i < data.length; i++) {
+                if (+(filterRooms.value) !== data[i].offer.rooms) {
+                    // pins[i].classList.add('visuallyhidden'); 
+                    return filterArray.push(pins[i]);
+                    filteringMain();
+                }
+                if (filterRooms.value === 'any') {
+                    pins[i].classList.remove('visuallyhidden');
+                }
+            }   
+
+        };
+
+        filterGuests.addEventListener('change', addGuestsToArray);
+        var addGuestsToArray = function () {
+
+            for (let i = 0; i < data.length; i++) {
+                if (+(filterGuests.value) !== data[i].offer.guests) {
+                    // pins[i].classList.add('visuallyhidden');
+                    return filterArray.push(pins[i]);
+                    filteringMain();
+                }
+                if (filterGuests.value === 'any') {
+                    pins[i].classList.remove('visuallyhidden');
+                }
+
+            }   
+        };
+
+
+        filterFeatures.addEventListener('click', addFeaturesToArray); 
+        
+        var addFeaturesToArray = function (evt) {
+            let target = evt.target;
+
+            while (target !== filterFeatures) {
+
+                if (target.type === 'checkbox') {
+                    for (let i = 0; i < data.length; i++) {
+
+                    let adFeatures = data[i].offer.features;
+
+                    if (adFeatures.indexOf(target.value) === -1) {
+                        // pins[i].classList.toggle('visuallyhidden');
+                        return filterArray.push(pins[i]);
+                        filteringMain();
+                    }
+                }
+                    return
+                }
+                target = target.parentNode;
+            }
+        };
+
+        console.log(filterArray);
+
+        var filteringMain = function () {
+            for (let i = 0; i < pins.length; i++) {
+                filterArray[i].classList.add('visuallyhidden');
+            }
+        }
+        // let mainFilterArray = filterArray.concat(filterTypeArray, filterPriceArray,  filterRoomsArray,  filterGuestsArray,  filterFeaturesArray);
 
     } else {
         alert('Данные не загрузились, попробуйте позже!');
     }
-
-
 }
