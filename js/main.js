@@ -465,71 +465,95 @@ const filterPins = function (data) {
             filterGuests = document.getElementById('housing-guests'),
             filterFeatures = document.getElementById('housing-features');
 
-    let pins = document.querySelectorAll('.map__pin-template'),
-        filterArray = [];
+    let pins = document.querySelectorAll('.map__pin-template');
+    let filterArray = [];
+
 
     // const revertPins = function () {
     //     for (let i = 0; i < pins.length; i++) {
-    //         pins[i].classList.remove('visuallyhidden');
+    //         pins[i].classList.add('visuallyhidden');
     //     }
     // };
 
     if (data.length > 0) {
 
-        // for (let i = 0; i < pins.length; i++) {
-        //     switch (true) {
-        //         case (filterType.options[filterType.selectedIndex].value !== data[i].offer.type):
-        //         case (filterRooms.options[filterType.selectedIndex].value !== data[i].offer.rooms):
-        //         case (filterGuests.options[filterType.selectedIndex].value !== data[i].offer.guests):
-        //             filterArray.push(pins[i]);
-        //             break;
-        //         case (filterPrice.options[filterType.selectedIndex].value !== data[i].offer.price):
-        //             priceFunction();
-        //             break;
-        //         // case (filterType.options[filterType.selectedIndex].value !== data[i].offer.type):
+        // const filteringMain = function (pinsToHide) {
 
-        //     }
-        // }
+        //     filterArray.length = 0;
+        //     filterArray.push(pinsToHide);
+        //     console.log(filterArray);
 
-        
+        //     // Находим повторяющиеся элементы в массиве
+        //     let filterArrayDuplicates = filterArray.reduce(function(acc, el, i, arr) {
+        //         if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el); return acc;
+        //       }, []); 
 
-        filterType.addEventListener('change', addTypeToArray); 
-        
-        var addTypeToArray = function () {
+        //     console.log(filterArrayDuplicates);
+
+        //     // Оставляем видимыми повторяющиеся элементы массива
+        //     filterArrayDuplicates.forEach(function(item) {
+        //         item.classList.remove('visuallyhidden');
+        //     });
+
+
+        filterType.addEventListener('change', function () {
+
+            // let arrayType = [];
+            // arrayType.forEach(function(item){
+            //     item.classList.remove('visuallyhidden');   
+            // });
+            // arrayType.length = 0;
+            // console.log(arrayType);
 
             for (let i = 0; i < data.length; i++) {
+                
+                // console.log(arrayType.length);
+                pins[i].classList.remove('visuallyhidden');   
                 if(filterType.value !== data[i].offer.type) {
-                    // pins[i].classList.add('visuallyhidden');
-                    return filterArray.push(pins[i]);
+    
+                    // arrayType.push(pins[i]);
+                    // arrayType.forEach(function(item) {
+                    //     item.classList.add('visuallyhidden');   
+                    // });
+
+                    pins[i].classList.add('visuallyhidden');   
+
+                    // filteringMain(pins[i]);
+
+                    // arrayMain.push(pins[i]);
+
                 }
                 if (filterType.value === 'any') {
                     pins[i].classList.remove('visuallyhidden');
                 }
             }   
-        };
+        }); 
 
-        filterPrice.addEventListener('change', addPriceToArray);
-        
-        var addPriceToArray = function () {
+
+        filterPrice.addEventListener('change', function () {
 
             for ( let i = 0; i < data.length; i++ ) {
+                pins[i].classList.remove('visuallyhidden'); 
                 switch (filterPrice.value) {
                     case 'low':
                         if (data[i].offer.price > 10000) {
-                            // pins[i].classList.add('visuallyhidden');
-                            return filterArray.push(pins[i]);
+                            pins[i].classList.add('visuallyhidden');
+                            // return filterArray.push(pins[i]);
+                            // filteringMain(pins[i]);
                         }
                             break;
                     case 'middle':
                         if (!((data[i].offer.price >= 10000) && (data[i].offer.price < 50000))) {
-                            // pins[i].classList.add('visuallyhidden');
-                            return filterArray.push(pins[i]);
+                            pins[i].classList.add('visuallyhidden');
+                            // return filterArray.push(pins[i]);
+                            // filteringMain(pins[i]);
                         }
                             break;
                     case 'high': 
                         if(data[i].offer.price < 50000) {
-                            // pins[i].classList.add('visuallyhidden');
-                            return filterArray.push(pins[i]);
+                            pins[i].classList.add('visuallyhidden');
+                            // return filterArray.push(pins[i]);
+                            // filteringMain(pins[i]);
                         }
                             break;
                     case 'any':
@@ -539,102 +563,85 @@ const filterPins = function (data) {
                         break;  
                 }
             }
-        };
-
-        // const priceFunction = function() {
-            
-        //     for ( let i = 0; i < data.length; i++ ) {
-        //         switch (filterPrice.value) {
-        //             case 'low':
-        //                 if (data[i].offer.price > 10000) {
-        //                     // pins[i].classList.add('visuallyhidden');}
-        //                     filterArray.push(pins[i]);}
-        //                     break;
-        //             case 'middle':
-        //                 if (!((data[i].offer.price >= 10000) && (data[i].offer.price < 50000))) {
-        //                     // pins[i].classList.add('visuallyhidden');}
-        //                     filterArray.push(pins[i]);}
-        //                     break;
-        //             case 'high': 
-        //                 if(data[i].offer.price < 50000) {
-        //                     // pins[i].classList.add('visuallyhidden');}
-        //                     filterArray.push(pins[i]);}
-        //                     break;
-        //             case 'any':
-        //                     pins[i].classList.remove('visuallyhidden');
-        //                 break;
-        //             default: 
-        //                 break;  
-        //         }
-        //     }
-        // };
-
-        filterRooms.addEventListener('change', addRoomsToArray);
+        }
+);
         
-        var addRoomsToArray = function () {
 
+        filterRooms.addEventListener('change', function () {
+
+            // let arrayRooms = [];
+            // console.log(arrayRooms.length);
+            // arrayRooms.forEach(function(item){
+            //     item.classList.remove('visuallyhidden');
+            // });
+            // arrayRooms.length = 0;
             for(let i = 0; i < data.length; i++) {
+                pins[i].classList.remove('visuallyhidden'); 
                 if (+(filterRooms.value) !== data[i].offer.rooms) {
-                    // pins[i].classList.add('visuallyhidden'); 
-                    return filterArray.push(pins[i]);
-                    filteringMain();
+
+                    // arrayRooms.push(pins[i]);
+                    // arrayRooms.forEach(function(item){
+                    //     item.classList.add('visuallyhidden'); 
+                    // });
+
+            
+                    pins[i].classList.add('visuallyhidden'); 
+
+                    // return filterArray.push(pins[i]);
+   
+                    // filteringMain(pins[i]);
                 }
                 if (filterRooms.value === 'any') {
                     pins[i].classList.remove('visuallyhidden');
                 }
             }   
 
-        };
+        });
+        
 
-        filterGuests.addEventListener('change', addGuestsToArray);
-        var addGuestsToArray = function () {
+        filterGuests.addEventListener('change', function () {
 
             for (let i = 0; i < data.length; i++) {
+                pins[i].classList.remove('visuallyhidden'); 
                 if (+(filterGuests.value) !== data[i].offer.guests) {
-                    // pins[i].classList.add('visuallyhidden');
-                    return filterArray.push(pins[i]);
-                    filteringMain();
+                    pins[i].classList.add('visuallyhidden');
+
+                    // filteringMain(pins[i]);
                 }
                 if (filterGuests.value === 'any') {
                     pins[i].classList.remove('visuallyhidden');
                 }
 
             }   
-        };
-
-
-        filterFeatures.addEventListener('click', addFeaturesToArray); 
+        });
         
-        var addFeaturesToArray = function (evt) {
+
+
+        // const addFeaturesToArray = 
+
+        filterFeatures.addEventListener('click', function (evt) {
             let target = evt.target;
 
             while (target !== filterFeatures) {
 
                 if (target.type === 'checkbox') {
                     for (let i = 0; i < data.length; i++) {
-
+                    // pins[i].classList.remove('visuallyhidden'); 
+                    pins[i].classList.remove('visuallyhidden'); 
                     let adFeatures = data[i].offer.features;
 
                     if (adFeatures.indexOf(target.value) === -1) {
-                        // pins[i].classList.toggle('visuallyhidden');
-                        return filterArray.push(pins[i]);
-                        filteringMain();
+
+                        pins[i].classList.toggle('visuallyhidden');
+
+                        // filteringMain(pins[i]);
                     }
                 }
                     return
                 }
                 target = target.parentNode;
             }
-        };
-
-        console.log(filterArray);
-
-        var filteringMain = function () {
-            for (let i = 0; i < pins.length; i++) {
-                filterArray[i].classList.add('visuallyhidden');
-            }
-        }
-        // let mainFilterArray = filterArray.concat(filterTypeArray, filterPriceArray,  filterRoomsArray,  filterGuestsArray,  filterFeaturesArray);
+        }); 
 
     } else {
         alert('Данные не загрузились, попробуйте позже!');
